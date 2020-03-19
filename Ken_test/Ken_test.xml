@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Ken_test</name>
+    </assembly>
+    <members>
+        <member name="M:Ken_test.Common.ClientHelper.GetClientUserIp(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            获取客户Ip
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ken_test.Controllers.RoomController.SubmitMessage(System.String,System.String)">
+            <summary>
+            发消息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ken_test.Controllers.RoomController.GetMessage(System.String)">
+            <summary>
+            获取消息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Ken_test.Dtos.MessgesDtoF.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.MessgesDtoF.EditTime">
+            <summary>
+            编辑时间
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.MessgesDtoF.IsDeleted">
+            <summary>
+            逻辑删除
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.MessgesDtoF.MsgContext">
+            <summary>
+            消息内容
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.MessgesDtoF.UserId">
+            <summary>
+            发送人主键
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.MessgesDtoF.UserName">
+            <summary>
+            发送人姓名
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.BaseModel.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.BaseModel.EditTime">
+            <summary>
+            编辑时间
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.BaseModel.IsDeleted">
+            <summary>
+            逻辑删除
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.UserInfo.NickName">
+            <summary>
+            用户昵称
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.UserInfo.RealName">
+            <summary>
+            真实姓名
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.UserInfo.Password">
+            <summary>
+            登录密码
+            </summary>
+        </member>
+        <member name="M:Ken_test.Repositories.Ken_testContext.UnlessDeleteSave">
+            <summary>
+            定义逻辑删除字段更新规则
+            </summary>
+        </member>
+    </members>
+</doc>

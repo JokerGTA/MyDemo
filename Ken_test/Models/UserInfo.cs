@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ken_test.Models
 {
-    public class UserInfo:BaseModel
+    public class UserInfo : BaseModel
     {
         /// <summary>
         /// 用户昵称
@@ -25,5 +25,7 @@ namespace Ken_test.Models
         /// </summary>
         [StringLength(50)]
         public string Password { get; set; }
+
+        public virtual List<MessageLog> MessageLogs { get; set; }
     }
 }

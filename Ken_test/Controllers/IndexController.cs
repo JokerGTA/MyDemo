@@ -10,9 +10,6 @@ namespace Ken_test.Controllers
     [Route("api/index")]
     public class IndexController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+       
     }
 }
