@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ken_test.Bos;
 using Ken_test.Common;
+using Ken_test.Controllers.CFilter;
 using Ken_test.Dtos;
+using Ken_test.Middlewares;
 using Ken_test.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,6 +45,7 @@ namespace Ken_test.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [ApiFilter]
         //[ApiFilter(ApiType = ApiType.Admin)]
         public IActionResult GetMessage(string ip)
         {
@@ -59,6 +62,19 @@ namespace Ken_test.Controllers
             }
 
             return Ok(result);
+        }
+
+
+        /// <summary>
+        /// 向前端发送消息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("receive")]
+        [ApiFilter]
+        //[ApiFilter(ApiType = ApiType.Admin)]
+        public void ReceiveMessage(string msg)
+        {
+            WebSocketHandler.AdminSendMessage(msg);
         }
     }
 }

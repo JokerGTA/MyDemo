@@ -23,6 +23,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Ken_test.Controllers.RoomController.ReceiveMessage(System.String)">
+            <summary>
+            向前端发送消息
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:Ken_test.Dtos.MessgesDtoF.CreateTime">
             <summary>
             创建时间
@@ -52,6 +58,45 @@
             <summary>
             发送人姓名
             </summary>
+        </member>
+        <member name="M:Ken_test.Middlewares.WebSocketHandler.Map(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            路由绑定处理
+            </summary>
+            <param name="app"></param>
+        </member>
+        <member name="M:Ken_test.Middlewares.WebSocketHandler.Acceptor(Microsoft.AspNetCore.Http.HttpContext,System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            创建链接
+            </summary>
+            <param name="httpContext"></param>
+            <param name="next"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ken_test.Middlewares.WebSocketHandler.RecvAsync(System.Net.WebSockets.WebSocket,System.Threading.CancellationToken)">
+            <summary>
+            接收客户端数据
+            </summary>
+            <param name="webSocket">webSocket 对象</param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ken_test.Middlewares.WebSocketHandler.SendMessage``1(System.Net.WebSockets.WebSocket,``0)">
+            <summary>
+            发送消息
+            </summary>
+            <typeparam name="TEntity"></typeparam>
+            <param name="webSocket"></param>
+            <param name="entity"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ken_test.Middlewares.WebSocketHandler.AdminSendMessage``1(``0)">
+            <summary>
+            后台群发
+            </summary>
+            <typeparam name="TEntity"></typeparam>
+            <param name="entity"></param>
+            <returns></returns>
         </member>
         <member name="P:Ken_test.Models.BaseModel.CreateTime">
             <summary>

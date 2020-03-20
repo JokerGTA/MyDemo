@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Ken_test.Bos;
+using Ken_test.Middlewares;
 using Ken_test.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -114,14 +117,48 @@ namespace Ken_test
                 FileProvider = fileProvider,
                 DefaultFileNames = new[] { "index.html" }
             });
+      
+            app.UseCookiePolicy();
+
+            var webSocketOptions = new WebSocketOptions()
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(120),
+                ReceiveBufferSize = 40 * 1024
+            };
+            app.UseWebSockets(webSocketOptions);
+
+            //app.Use(async (context, next) =>
+            //{
+            //    if (context.Request.Path == "/ws")
+            //    {
+            //        if (context.WebSockets.IsWebSocketRequest)
+            //        {
+            //            WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+            //            //var socketFinishedTcs = new TaskCompletionSource<WebSocket>(webSocket);
+            //            //await socketFinishedTcs.Task;
+            //            var result = await RecvAsync(webSocket, CancellationToken.None);
+            //        }
+            //        else
+            //        {
+            //            context.Response.StatusCode = 400;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        await next();
+            //    }
+
+            //});
+
+            app.Map("/ws", WebSocketHandler.Map);
+
+
 
             app.UseStaticFiles(new StaticFileOptions()
             {
                 FileProvider = fileProvider
             });
             app.UseStaticFiles();
-
-            app.UseCookiePolicy();
 
             if (!env.IsProduction())
             {
@@ -130,11 +167,10 @@ namespace Ken_test
                 {                    
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Ken API");
                 });
-            }
-
+            }            
             app.UseMvc();
+            
 
-          
         }
     }
 }

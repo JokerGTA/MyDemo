@@ -4,13 +4,65 @@
 * @Last Modified by:   sublime text
 * @Last Modified time: 2015-10-02 09:11:29
 */
-
+var socket;
+var uri = "wss://" + window.location.host + "/ws";// "/api/room/receive"
+var output;
+var text = { 'State': 0 };
+var message = {
+    nickname: "benben_2015",
+    email: "123456@qq.com",
+    content: "I love programming"
+};
 $(document).ready(function () {
 
 
+    load_init();
+    function load_init() {
+        socket = new WebSocket(uri);
+        socket.binaryType = "arraybuffer";
+    }
 
 
+    //接受
+    function write(s) {
+        debugger
+        console.log(s);
+        if (socket.readyState === 1) {
+            socket.send(JSON.stringify(message));
+            debugger
+        } else {
+            //do something
+        }
+    }
 
+    function doConnect() {
+        socket.onopen = function (e) { console.log("已连接至服务器"); write("");};
+        socket.onclose = function (e) { console.log("链接已关闭"); };
+        socket.onmessage = function (e) { alert(e.data); };
+        socket.onerror = function (e) { console.log(e); };
+    }
+
+    function doSend() {
+
+        //添加事件监听
+        socket.addEventListener('open', function () {
+            //write("Sending: " + text);
+            socket.send(JSON.stringify(text));
+        });
+
+    }
+    function onInit() {
+        //output = document.getElementById("output");
+        doConnect();
+    }
+
+    function doclose() {
+        socket.onclose = function (e) {
+            console.log(e);
+            socket.close(); //关闭TCP连接
+        }
+    }
+    window.onload = onInit;
 
 
 
@@ -138,19 +190,25 @@ $(document).ready(function () {
         str = str.replace(/\n/g, '<br/>');
         str = str.replace(/\[em_([0-9]*)\]/g, '<img src="../images/face/$1.gif" alt="" />');
         if (str != '') {
-            $.ajax({
-                url: '/api/room/submit',
-                type: 'post',
-                data: { context: str, ip: returnCitySN["cip"] },
-                async: false,
-                success: function (data) {
-                },
-                error: function (data) {
+            //$.ajax({
+            //    url: '/api/room/submit',
+            //    type: 'post',
+            //    data: { context: str, ip: returnCitySN["cip"] },
+            //    async: false,
+            //    success: function (data) {
+            //    },
+            //    error: function (data) {
 
-                }
+            //    }
 
-            });
-
+            //});
+            debugger
+            doConnect()
+            if (socket.readyState === 1) {
+                socket.send(JSON.stringify(str));
+            } else {
+                //do something
+            }
             sends_message(returnCitySN["cip"], 1, str); // sends_message(昵称,头像id,聊天内容);
 
 
@@ -233,7 +291,7 @@ $(document).ready(function () {
         //console.log(year, mon, date, weeks[week])
         //$("#time").html(year + "年" + mon + "月" + date + "日" + weeks[week]);
         if (message != '') {
-            $('.main .chat_info').html($('.main .chat_info').html() + '<li class="right"><img src="../images/user/' + userPortrait + '.png" alt=""><b>' + userName + '</b><i>' + year + '-' + mon + '-' + date+ ' '+ h + ':' + m + ':' + s + '</i><div class="aaa">' + message + '</div></li>');
+            $('.main .chat_info').html($('.main .chat_info').html() + '<li class="right"><img src="../images/user/' + userPortrait + '.png" alt=""><b>' + userName + '</b><i>' + year + '-' + mon + '-' + date + ' ' + h + ':' + m + ':' + s + '</i><div class="aaa">' + message + '</div></li>');
         }
     }
     $('.text input').keypress(function (e) {
