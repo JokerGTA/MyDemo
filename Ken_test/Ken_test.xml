@@ -59,6 +59,21 @@
             发送人姓名
             </summary>
         </member>
+        <member name="P:Ken_test.Dtos.UserWebsoketDto.UserId">
+            <summary>
+            用户标识
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.UserWebsoketDto.UserName">
+            <summary>
+            用户名称
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.UserWebsoketDto.UserHeadPic">
+            <summary>
+            用户头像图片
+            </summary>
+        </member>
         <member name="M:Ken_test.Middlewares.WebSocketHandler.Map(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             路由绑定处理
@@ -73,21 +88,23 @@
             <param name="next"></param>
             <returns></returns>
         </member>
-        <member name="M:Ken_test.Middlewares.WebSocketHandler.RecvAsync(System.Net.WebSockets.WebSocket,System.Threading.CancellationToken)">
+        <member name="M:Ken_test.Middlewares.WebSocketHandler.RecvAsync(Ken_test.Dtos.UserWebsoketDto,System.Net.WebSockets.WebSocket,System.Threading.CancellationToken)">
             <summary>
             接收客户端数据
             </summary>
+            <param name="userInfo"></param>       
             <param name="webSocket">webSocket 对象</param>
             <param name="cancellationToken"></param>
             <returns></returns>
         </member>
-        <member name="M:Ken_test.Middlewares.WebSocketHandler.SendMessage``1(System.Net.WebSockets.WebSocket,``0)">
+        <member name="M:Ken_test.Middlewares.WebSocketHandler.SendMessage``1(System.Net.WebSockets.WebSocket,``0,System.String)">
             <summary>
             发送消息
             </summary>
             <typeparam name="TEntity"></typeparam>
             <param name="webSocket"></param>
             <param name="entity"></param>
+            <param name="userid"></param>
             <returns></returns>
         </member>
         <member name="M:Ken_test.Middlewares.WebSocketHandler.AdminSendMessage``1(``0)">

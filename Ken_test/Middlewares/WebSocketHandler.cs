@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Ken_test.Dtos;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
@@ -15,7 +16,7 @@ namespace Ken_test.Middlewares
     public static class WebSocketHandler
     {
         static List<WebSocket> webSockets { get; set; } = new List<WebSocket>();
-
+        static Dictionary<string, SocketObject> dicWebsockets { get; set; } = new Dictionary<string, SocketObject>();
         /// <summary>
         /// 路由绑定处理
         /// </summary>
@@ -36,21 +37,30 @@ namespace Ken_test.Middlewares
 
             if (!httpContext.WebSockets.IsWebSocketRequest)
                 return;
+            UserWebsoketDto userInfo = new UserWebsoketDto();
+            string userId = httpContext.Request.Query["userId"].ToArray()[0];
+            string userName = httpContext.Request.Query["userName"].ToArray()[0];
+            string userHeadPic = httpContext.Request.Query["userHeadPic"].ToArray()[0];
+            userInfo.UserId = userId;
+            userInfo.UserName = userName;
+            userInfo.UserHeadPic = userHeadPic;
             var socket = await httpContext.WebSockets.AcceptWebSocketAsync();
-            webSockets.Add(socket);
-            var result = await RecvAsync(socket, CancellationToken.None);
+            if (!dicWebsockets.ContainsKey(userId))
+                dicWebsockets.Add(userId, new SocketObject { UserWebsoket = userInfo, WebSocket = socket });
 
+            var result = await RecvAsync(userInfo, socket, CancellationToken.None);
         }
 
         /// <summary>
         /// 接收客户端数据
         /// </summary>
+        /// <param name="userInfo"></param>       
         /// <param name="webSocket">webSocket 对象</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private static async Task<string> RecvAsync(WebSocket webSocket, CancellationToken cancellationToken)
+        private static async Task<string> RecvAsync(UserWebsoketDto userInfo, WebSocket webSocket, CancellationToken cancellationToken)
         {
-            int isFirst = 0;
+            string userid = userInfo.UserId;
             List<string> oldRequestParam = new List<string>();
             WebSocketReceiveResult result;
             do
@@ -71,7 +81,13 @@ namespace Ken_test.Middlewares
                 ms.Dispose();
                 if (!string.IsNullOrEmpty(s))
                 {
-                    await SendMessage(webSocket, s);
+                    SocketMessage socketMessage = new SocketMessage
+                    {
+                        UserName = userInfo.UserName,
+                        UserHeadPic = userInfo.UserHeadPic,
+                        Msg = s
+                    };
+                    await SendMessage(webSocket, socketMessage, userid);
                 }
                 oldRequestParam.Add(s);
 
@@ -80,24 +96,43 @@ namespace Ken_test.Middlewares
             return "";
         }
 
+        private class SocketMessage
+        {
+            public string UserName { get; set; }
+            public string UserHeadPic { get; set; }
+            public string Msg { get; set; }
+        }
+
+        private class SocketObject
+        {
+            public UserWebsoketDto UserWebsoket { get; set; }
+            public WebSocket WebSocket { get; set; }
+        }
         /// <summary>
         /// 发送消息
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="webSocket"></param>
         /// <param name="entity"></param>
+        /// <param name="userid"></param>
         /// <returns></returns>
-        private static async Task SendMessage<TEntity>(WebSocket webSocket, TEntity entity)
+        private static async Task SendMessage<TEntity>(WebSocket webSocket, TEntity entity, string userid)
         {
             var Json = JsonConvert.SerializeObject(entity);
             var bytes = Encoding.UTF8.GetBytes(Json);
 
-            await webSocket.SendAsync(
-                new ArraySegment<byte>(bytes),
-                WebSocketMessageType.Text,
-                true,
-                CancellationToken.None
-            );
+            foreach (var item in dicWebsockets)
+            {
+                //if (item.Key.UserId != userid)
+                //{
+                await webSocket.SendAsync(
+                    new ArraySegment<byte>(bytes),
+                    WebSocketMessageType.Text,
+                    true,
+                    CancellationToken.None
+                );
+                //}
+            }
         }
 
         /// <summary>
@@ -106,21 +141,22 @@ namespace Ken_test.Middlewares
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public static void AdminSendMessage<TEntity>(TEntity entity)
+        public static async void AdminSendMessage<TEntity>(TEntity entity)
         {
             var Json = JsonConvert.SerializeObject(entity);
             var bytes = Encoding.UTF8.GetBytes(Json);
 
-            webSockets.ForEach(webSocket =>
+            foreach (var webSocket in webSockets)
             {
-                webSocket.SendAsync(
+                await webSocket.SendAsync(
                 new ArraySegment<byte>(bytes),
                 WebSocketMessageType.Text,
                 true,
-                CancellationToken.None
-            );
-            });
-
+                CancellationToken.None);
+            }
         }
+
+
+
     }
 }

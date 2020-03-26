@@ -8,13 +8,25 @@
     <link rel="stylesheet" href="../rolling/css/rolling.css">
     <link rel="stylesheet" href="../stylesheets/style.css">
     <script type="text/javascript" src="../javascripts/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../javascripts/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../layer/layer.js"></script>
     <script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../rolling/js/rolling.js"></script>
     <script type="text/javascript" src="../javascripts/Public.js"></script>
     <style type="text/css">
-        .thumbnail > img {
+        .thumbnail div> img {
             width: 283px !important;
             height: 153px !important;
+        }
+        .dim {
+            opacity: 0.3;            
+        }
+        .zwp {
+            margin-top: -90px;
+            margin-left: 98px;
+            font-size: 24px;
+            color: yellow;
+            font-weight: bolder;
         }
     </style>
 </head>
@@ -28,8 +40,8 @@
                 </a>
             </div>
             <ul class="topnavlist">
-                <li class="userinfo">
-                    <a><span class="glyphicon glyphicon-user"></span><b>用户名</b></a>
+                <li class="userinfo" style="width:180px;">
+                    <a style="width:auto"><span class="glyphicon glyphicon-user"></span><b style="margin-left:8px">用户名</b></a>
                     <div class="popover fade bottom in">
                         <div class="arrow"></div>
                         <h3 class="popover-title">用户信息</h3>
@@ -52,14 +64,14 @@
                                 <img portrait_id="12" src="../images/user/12.png" alt="portrait_1">
                             </p>
                             <p class="user_name">
-                                <input type="text" class="form-control" placeholder="用户名">
+                                <input type="text" class="form-control" placeholder="用户名" maxlength="8">
                                 <button id="userinfo_sub" type="button" class="btn btn-primary btn-block">确定</button>
                             </p>
                         </div>
                     </div>
                 </li>
-                <li class="theme">
-                    <a><span class="glyphicon glyphicon-leaf"></span><b>主题</b></a>
+                <li class="theme" style="margin-right:40px">
+                    <a style="width:100px"><span class="glyphicon glyphicon-leaf"></span><b style="margin-left:8px">切换主题</b></a>
                     <div class="popover fade bottom in">
                         <div class="arrow"></div>
                         <h3 class="popover-title">主题设置</h3>
@@ -86,38 +98,55 @@
             <div class="room_list">
                 <div class="col-xs-6 col-sm-6 col-md-4">
                     <a href="room.html" class="thumbnail">
-                        <img src="../images/rooms/1.jpg" alt="聊天室1">
-                        <span><span class='glyphicon glyphicon-user'></span>18人</span>
+                        <div style="background-color:gray;width: 283px;height:153px">
+                            <img src="../images/rooms/1.jpg" alt="聊天室1">
+                        </div>                        
+                        <span style="color:greenyellow"><span class='glyphicon glyphicon-user'></span>1人</span>
                     </a>
                 </div>
                 <div class="col-xs-6 col-sm-6 col-md-4">
-                    <a href="room.html" class="thumbnail">
-                        <img src="../images/rooms/2.jpg" alt="聊天室2">
-                        <span><span class='glyphicon glyphicon-user'></span>13人</span>
+                    <a href="room.html" class="thumbnail" style="pointer-events: none;">
+                        <div style="background-color:gray;width: 283px;height:153px">
+                            <img src="../images/rooms/2.jpg" alt="聊天室2" class="dim">
+                            <p class="zwp">暂未开放</p>
+                        </div>
+                        <!--<span><span class='glyphicon glyphicon-user'></span>13人</span>-->
                     </a>
                 </div>
                 <div class="col-xs-6 col-sm-6 col-md-4">
-                    <a href="room.html" class="thumbnail">
-                        <img src="../images/rooms/3.jpg" alt="聊天室3">
-                        <span><span class='glyphicon glyphicon-user'></span>825人</span>
+                    <a href="room.html" class="thumbnail" style="pointer-events: none;">
+                        <div style="background-color:gray;width: 283px;height:153px">
+                            <img src="../images/rooms/3.jpg" alt="聊天室3" class="dim">
+                            <p class="zwp">暂未开放</p>
+                        </div>                        
+                        <!--<span><span class='glyphicon glyphicon-user'></span>825人</span>-->
                     </a>
                 </div>
                 <div class="col-xs-6 col-sm-6 col-md-4">
-                    <a href="room.html" class="thumbnail">
-                        <img src="../images/rooms/4.jpg" alt="聊天室4">
-                        <span><span class='glyphicon glyphicon-user'></span>421人</span>
+                    <a href="room.html" class="thumbnail" style="pointer-events: none;">
+                        <div style="background-color:gray;width: 283px;height:153px">
+                            <img src="../images/rooms/4.jpg" alt="聊天室4" class="dim">
+                            <p class="zwp">暂未开放</p>
+                        </div>
+                        <!--<span><span class='glyphicon glyphicon-user'></span>421人</span>-->
                     </a>
                 </div>
                 <div class="col-xs-6 col-sm-6 col-md-4">
-                    <a href="room.html" class="thumbnail">
-                        <img src="../images/rooms/5.jpg" alt="聊天室5">
-                        <span><span class='glyphicon glyphicon-user'></span>523人</span>
+                    <a href="room.html" class="thumbnail" style="pointer-events: none;">
+                        <div style="background-color:gray;width: 283px;height:153px">
+                            <img src="../images/rooms/5.jpg" alt="聊天室5" class="dim">
+                            <p class="zwp">暂未开放</p>
+                        </div>
+                        <!--<span><span class='glyphicon glyphicon-user'></span>523人</span>-->
                     </a>
                 </div>
                 <div class="col-xs-6 col-sm-6 col-md-4">
-                    <a href="room.html" class="thumbnail">
-                        <img src="../images/rooms/6.jpg" alt="聊天室6">
-                        <span><span class='glyphicon glyphicon-user'></span>254人</span>
+                    <a href="room.html" class="thumbnail" style="pointer-events: none;">
+                        <div style="background-color:gray;width: 283px;height:153px">
+                            <img src="../images/rooms/6.jpg" alt="聊天室6" class="dim">
+                            <p class="zwp">暂未开放</p>
+                        </div>
+                        <!--<span><span class='glyphicon glyphicon-user'></span>254人</span>-->
                     </a>
                 </div>
             </div>

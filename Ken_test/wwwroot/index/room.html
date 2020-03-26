@@ -8,10 +8,13 @@
     <link rel="stylesheet" href="../rolling/css/rolling.css">
     <link rel="stylesheet" href="../stylesheets/style.css">
     <script type="text/javascript" src="../javascripts/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../javascripts/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../layer/layer.js"></script>
     <script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../rolling/js/rolling.js"></script>
-    <script type="text/javascript" src="../javascripts/Public.js"></script>
     <script type="text/javascript" src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
+    <script type="text/javascript" src="../javascripts/Public.js"></script>
+    <script type="text/javascript" src="../javascripts/room.js"></script>
 </head>
 <body class="room">
     <div class="scrollbar-macosx">
@@ -232,69 +235,3 @@
     </div>
 </body>
 </html>
-<script>
-    $(function () {
-        //$.ajax({
-        //    url: '/api/room?ip=' + returnCitySN["cip"] ,
-        //    type: 'get',
-        //    async: false,
-        //    success: function (data) {
-        //        $.each(data, function (index, value) {
-        //            if (value.isMine) {
-        //                $('.main .chat_info').html($('.main .chat_info').html() + '<li class="right"><img src="../images/user/' + 1 + '.png" alt=""><b>' + value.userName + '</b><i>' + value.createTime + '</i><div class="aaa">' + value.msgContext + '</div></li>');
-        //            }
-        //            else {
-        //                $('.main .chat_info').html($('.main .chat_info').html() + '<li class="left"><img src="../images/user/' + 2 + '.png" alt=""><b>' + value.userName + '</b><i>' + value.createTime + '</i><div class="aaa">' + value.msgContext + '</div></li>');
-        //            }
-        //        });
-
-        //    },
-        //    error: function (data) {
-
-        //    }
-        //});
-
-        
-       
-        //接受
-        //function write(s) {
-        //    //console.log(s);
-        //    if (socket.readyState === 1) {
-        //        socket.send(JSON.stringify(message));
-        //    } else {
-        //        //do something
-        //    }
-        //}
-
-        //function doConnect() {
-        //    //alert(2);
-        //    socket.onopen = function (e) { write("opened " + uri); };
-        //    socket.onclose = function (e) { doConnect(); };
-        //    socket.onmessage = function (e) { write(e.data); };
-        //    socket.onerror = function (e) { console.log(e); write("Error: " + e.data); };
-        //}
-
-        //function doSend() {
-
-        //    //添加事件监听
-        //    socket.addEventListener('open', function () {
-        //        //write("Sending: " + text);
-        //        socket.send(JSON.stringify(text));
-        //    });
-
-        //}
-        //function onInit() {
-        //    //output = document.getElementById("output");
-        //    doConnect();
-        //}
-
-        //function doclose() {
-        //    socket.onclose = function (e) {
-        //        console.log(e);
-        //        socket.close(); //关闭TCP连接
-        //    }
-        //}
-        //window.onload = onInit;
-
-    });
-</script>

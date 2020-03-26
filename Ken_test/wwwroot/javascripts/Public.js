@@ -1,113 +1,46 @@
-/* 
-* @Author: sublime text
-* @Date:   2015-09-30 13:10:12
-* @Last Modified by:   sublime text
-* @Last Modified time: 2015-10-02 09:11:29
-*/
-var socket;
-var uri = "wss://" + window.location.host + "/ws";// "/api/room/receive"
-var output;
-var text = { 'State': 0 };
-var message = {
-    nickname: "benben_2015",
-    email: "123456@qq.com",
-    content: "I love programming"
-};
 $(document).ready(function () {
 
-
-    load_init();
-    function load_init() {
-        socket = new WebSocket(uri);
-        socket.binaryType = "arraybuffer";
-    }
-
-
-    //接受
-    function write(s) {
-        debugger
-        console.log(s);
-        if (socket.readyState === 1) {
-            socket.send(JSON.stringify(message));
-            debugger
-        } else {
-            //do something
+    var userInfo = {};
+    var requestHref = window.location.toString();
+    if (requestHref.indexOf("login.html") == -1) {
+        var userCookie = $.cookie('chatUserInfo');
+        if (userCookie == undefined || userCookie.lenth == 0) {
+            layer.msg('用户信息已过期，请滚粗~', function () {
+                window.location.href = 'login.html';
+            });
+        }
+        else {
+            if (requestHref.indexOf("index.html") > 0) {
+                setUserName($.parseJSON(userCookie)["chatUserName"]);
+                setUserPic($.parseJSON(userCookie)["chatUserPortrait"])
+                var theme_id = $.cookie('chatUserTheme') == undefined || userCookie.lenth == 0 ? 1 : $.cookie('chatUserTheme');
+                $('body').css('background-image', 'url(../images/theme/' + theme_id + '_bg.jpg)');
+            }
         }
     }
-
-    function doConnect() {
-        socket.onopen = function (e) { console.log("已连接至服务器"); write("");};
-        socket.onclose = function (e) { console.log("链接已关闭"); };
-        socket.onmessage = function (e) { alert(e.data); };
-        socket.onerror = function (e) { console.log(e); };
-    }
-
-    function doSend() {
-
-        //添加事件监听
-        socket.addEventListener('open', function () {
-            //write("Sending: " + text);
-            socket.send(JSON.stringify(text));
-        });
-
-    }
-    function onInit() {
-        //output = document.getElementById("output");
-        doConnect();
-    }
-
-    function doclose() {
-        socket.onclose = function (e) {
-            console.log(e);
-            socket.close(); //关闭TCP连接
-        }
-    }
-    window.onload = onInit;
-
-
 
     // -------------------------登录页面---------------------------------------------------
 
     // 登录按钮
-
     $('#login').click(function (event) {
 
         var userName = $('.login input').val(); // 用户昵称
         var userPortrait = $('.login img').attr('portrait_id'); // 用户头像id
         if (userName == '') { // 如果不填昵称就给 "User" + ID
-            userName = 'User' + 21275;
+            userName = '用户-' + Date.parse(new Date());
         }
 
+        userInfo.chatUserName = userName;
+        userInfo.chatUserPortrait = userPortrait;
+        userInfo.chatUserIp = returnCitySN["cip"];
+
+        $.cookie('chatUserInfo', JSON.stringify(userInfo), { expires: 7 });  // { expires: 7, path: '/' }有效路径
         window.location.href = 'index.html'; // 页面跳转
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // ------------------------选择聊天室页面-----------------------------------------------
 
     // 用户信息提交
-
     $('#userinfo_sub').click(function (event) {
         var userName = $('.rooms .user_name input').val(); // 用户昵称
         var userPortrait = $('.rooms .user_portrait img').attr('portrait_id'); // 用户头像id
@@ -115,121 +48,41 @@ $(document).ready(function () {
             userName = $('.rooms .user_name input').attr('placeholder');
         }
 
+        userInfo.chatUserName = userName;
+        userInfo.chatUserPortrait = userPortrait;
+        $.cookie('chatUserInfo', JSON.stringify(userInfo), { expires: 7 });
+        setUserName(userName);
+        setUserPic(userPortrait);
+    });
 
-        // 下面是测试用的代码
-
-
+    // 设置用户名称
+    function setUserName(userName) {
         $('.userinfo a b').text(userName); // 修改标题栏的用户昵称
         $('.rooms .user_name input').val(''); // 昵称输入框清空
         $('.rooms .user_name input').attr('placeholder', userName); // 昵称输入框默认显示用户昵称
         $('.topnavlist .popover').not($(this).next('.popover')).removeClass('show'); // 关掉用户面板
         $('.clapboard').addClass('hidden'); // 关掉模糊背景
-    });
+    }
+
+    // 设置头像
+    function setUserPic(portrait_id) {
+        $('.select_portrait img').removeClass('t');
+        $('.select_portrait img[portrait_id =' + portrait_id + '] ').addClass('t');
+        $('.user_portrait img').attr('portrait_id', portrait_id);
+        $('.user_portrait img').attr('src', '../images/user/' + portrait_id + '.png');
+        //var userPortrait = $('.rooms .user_portrait img').attr(portrait_id); // 用户头像id
+    }
 
     // 设置主题
-
-
     $('.theme img').click(function (event) {
         var theme_id = $(this).attr('theme_id');
         $('.clapboard').click(); // 关掉用户模糊背景
-
-
-
-
-        // 下面是测试用的代码
-
-
+        $.cookie('chatUserTheme', theme_id, { expires: 7 });        
         $('body').css('background-image', 'url(../images/theme/' + theme_id + '_bg.jpg)'); // 设置背景
     });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // --------------------聊天室内页面----------------------------------------------------
-
-    // 发送图片
-
-    $('.imgFileBtn').change(function (event) {
-
-
-        var str = '<img src="../images/chatimg/' + '1/201503/agafsdfeaef.jpg' + '" />'
-
-        sends_message('绿巨人', 1, str); // sends_message(昵称,头像id,聊天内容);
-
-
-        // 滚动条滚到最下面
-        $('.scrollbar-macosx.scroll-content.scroll-scrolly_visible').animate({
-            scrollTop: $('.scrollbar-macosx.scroll-content.scroll-scrolly_visible').prop('scrollHeight')
-        }, 500);
-    });
-
-    // 发送消息   
-    $('.text input').focus();
-    $('#subxx').click(function (event) {
-        var str = $('.text input').val(); // 获取聊天内容
-        str = str.replace(/\</g, '&lt;');
-        str = str.replace(/\>/g, '&gt;');
-        str = str.replace(/\n/g, '<br/>');
-        str = str.replace(/\[em_([0-9]*)\]/g, '<img src="../images/face/$1.gif" alt="" />');
-        if (str != '') {
-            //$.ajax({
-            //    url: '/api/room/submit',
-            //    type: 'post',
-            //    data: { context: str, ip: returnCitySN["cip"] },
-            //    async: false,
-            //    success: function (data) {
-            //    },
-            //    error: function (data) {
-
-            //    }
-
-            //});
-            debugger
-            doConnect()
-            if (socket.readyState === 1) {
-                socket.send(JSON.stringify(str));
-            } else {
-                //do something
-            }
-            sends_message(returnCitySN["cip"], 1, str); // sends_message(昵称,头像id,聊天内容);
-
-
-            // 滚动条滚到最下面
-            $('.scrollbar-macosx.scroll-content.scroll-scrolly_visible').animate({
-                scrollTop: $('.scrollbar-macosx.scroll-content.scroll-scrolly_visible').prop('scrollHeight')
-            }, 500);
-
-        }
-        $('.text input').val(''); // 清空输入框
-        $('.text input').focus(); // 输入框获取焦点
-    });
-
-
-
-
-
-
     // -----下边的代码不用管---------------------------------------
-
-
 
     jQuery('.scrollbar-macosx').scrollbar();
     $('.topnavlist li a').click(function (event) {
@@ -244,11 +97,11 @@ $(document).ready(function () {
     $('.clapboard').click(function (event) {
         $('.topnavlist .popover').removeClass('show');
         $(this).addClass('hidden');
-        $('.user_portrait img').attr('portrait_id', $('.user_portrait img').attr('ptimg'));
-        $('.user_portrait img').attr('src', '../images/user/' + $('.user_portrait img').attr('ptimg') + '.png');
-        $('.select_portrait img').removeClass('t');
-        $('.select_portrait img').eq($('.user_portrait img').attr('ptimg') - 1).addClass('t');
-        $('.rooms .user_name input').val('');
+        //$('.user_portrait img').attr('portrait_id', $('.user_portrait img').attr('ptimg'));
+        //$('.user_portrait img').attr('src', '../images/user/' + $('.user_portrait img').attr('ptimg') + '.png');
+        //$('.select_portrait img').removeClass('t');
+        //$('.select_portrait img').eq($('.user_portrait img').attr('ptimg') - 1).addClass('t');
+        //$('.rooms .user_name input').val('');
     });
     $('.select_portrait img').hover(function () {
         var portrait_id = $(this).attr('portrait_id');
@@ -263,40 +116,12 @@ $(document).ready(function () {
         $('.select_portrait img').removeClass('t');
         $(this).addClass('t');
     });
-    $('.face_btn,.faces').hover(function () {
-        $('.faces').addClass('show');
-    }, function () {
-        $('.faces').removeClass('show');
-    });
-    $('.faces img').click(function (event) {
-        if ($(this).attr('alt') != '') {
-            $('.text input').val($('.text input').val() + '[em_' + $(this).attr('alt') + ']');
-        }
-        $('.faces').removeClass('show');
-        $('.text input').focus();
-    });
-    $('.imgFileico').click(function (event) {
-        $('.imgFileBtn').click();
-    });
-    function sends_message(userName, userPortrait, message) {
-        var myDate = new Date;
-        var year = myDate.getFullYear(); //获取当前年
-        var mon = myDate.getMonth() + 1; //获取当前月
-        var date = myDate.getDate(); //获取当前日
-        var h = myDate.getHours();//获取当前小时数(0-23)
-        var m = myDate.getMinutes();//获取当前分钟数(0-59)
-        var s = myDate.getSeconds();//获取当前秒
-        //var week = myDate.getDay();
-        //var weeks = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-        //console.log(year, mon, date, weeks[week])
-        //$("#time").html(year + "年" + mon + "月" + date + "日" + weeks[week]);
-        if (message != '') {
-            $('.main .chat_info').html($('.main .chat_info').html() + '<li class="right"><img src="../images/user/' + userPortrait + '.png" alt=""><b>' + userName + '</b><i>' + year + '-' + mon + '-' + date + ' ' + h + ':' + m + ':' + s + '</i><div class="aaa">' + message + '</div></li>');
-        }
-    }
-    $('.text input').keypress(function (e) {
-        if (e.which == 13) {
-            $('#subxx').click();
+
+    // 监听回车键
+    $(document).keyup(function (event) {
+        if (event.keyCode == 13) {
+            $("#login").trigger("click");
         }
     });
+
 });
