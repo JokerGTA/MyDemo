@@ -1,22 +1,33 @@
+var userName;
 $(document).ready(function () {
-
     var userInfo = {};
-    var requestHref = window.location.toString();
+    var userCookie = $.cookie('chatUserInfo');
+    var requestHref = window.location.toString();    
+    var isHaveCookies = userCookie == undefined || userCookie.lenth == 0 ? false : true;
     if (requestHref.indexOf("login.html") == -1) {
-        var userCookie = $.cookie('chatUserInfo');
-        if (userCookie == undefined || userCookie.lenth == 0) {
+        if (!isHaveCookies) {
             layer.msg('用户信息已过期，请滚粗~', function () {
                 window.location.href = 'login.html';
             });
         }
         else {
             if (requestHref.indexOf("index.html") > 0) {
-                setUserName($.parseJSON(userCookie)["chatUserName"]);
-                setUserPic($.parseJSON(userCookie)["chatUserPortrait"])
-                var theme_id = $.cookie('chatUserTheme') == undefined || userCookie.lenth == 0 ? 1 : $.cookie('chatUserTheme');
-                $('body').css('background-image', 'url(../images/theme/' + theme_id + '_bg.jpg)');
+                setUserInfo();
             }
         }
+    }
+    else {
+        if (isHaveCookies) {
+            window.location.href = 'index.html';
+        }
+    }
+
+    // 设置index用户信息
+    function setUserInfo() {
+        setUserName($.parseJSON(userCookie)["chatUserName"]);
+        setUserPic($.parseJSON(userCookie)["chatUserPortrait"])
+        var theme_id = isHaveCookies ? $.cookie('chatUserTheme') : 1;
+        $('body').css('background-image', 'url(../images/theme/' + theme_id + '_bg.jpg)');
     }
 
     // -------------------------登录页面---------------------------------------------------
@@ -77,7 +88,7 @@ $(document).ready(function () {
     $('.theme img').click(function (event) {
         var theme_id = $(this).attr('theme_id');
         $('.clapboard').click(); // 关掉用户模糊背景
-        $.cookie('chatUserTheme', theme_id, { expires: 7 });        
+        $.cookie('chatUserTheme', theme_id, { expires: 7 });
         $('body').css('background-image', 'url(../images/theme/' + theme_id + '_bg.jpg)'); // 设置背景
     });
 

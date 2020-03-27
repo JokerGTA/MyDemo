@@ -123,15 +123,15 @@ namespace Ken_test.Middlewares
 
             foreach (var item in dicWebsockets)
             {
-                //if (item.Key.UserId != userid)
-                //{
-                await webSocket.SendAsync(
-                    new ArraySegment<byte>(bytes),
-                    WebSocketMessageType.Text,
-                    true,
-                    CancellationToken.None
-                );
-                //}
+                if (item.Key != userid)
+                {
+                    await item.Value.WebSocket.SendAsync(
+                        new ArraySegment<byte>(bytes),
+                        WebSocketMessageType.Text,
+                        true,
+                        CancellationToken.None
+                    );
+                }
             }
         }
 

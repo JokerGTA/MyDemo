@@ -1,10 +1,7 @@
 ﻿var socket;
-var uri = "wss://" + window.location.host + "/ws?userId=" + returnCitySN["cip"] + "&&userName=鸣人&&userHeadPic=3";// "/api/room/receive"
-var message = {
-    nickname: "benben_2015",
-    email: "123456@qq.com",
-    content: "I love programming"
-};
+var userName = $.parseJSON($.cookie('chatUserInfo'))["chatUserName"];
+var userHeadPic = $.parseJSON($.cookie('chatUserInfo'))["chatUserPortrait"];
+var uri = "wss://" + window.location.host + "/ws?userId=" + returnCitySN["cip"] + "&&userName=" + userName + "&&userHeadPic=" + userHeadPic;// "/api/room/receive"
 $(document).ready(function () {
     // 创建Websocket链接
     load_init();
@@ -38,7 +35,7 @@ $(document).ready(function () {
         }, 500);
     });
 
-    // 发送消息   
+    // 发送消息
     $('.text input').focus();
     $('#subxx').click(function (event) {
         var str = $('.text input').val(); // 获取聊天内容
@@ -62,10 +59,9 @@ $(document).ready(function () {
             if (socket.readyState === 1) {
                 socket.send(str);
             } else {
-                //do something
+                layer.Msg("已与服务器断开连接");
             }
-            debugger
-            sends_message(returnCitySN["cip"], 1, str); // sends_message(昵称,头像id,聊天内容);
+            sends_message(userName, userHeadPic, str); // sends_message(昵称,头像id,聊天内容);
 
 
             // 滚动条滚到最下面
