@@ -115,7 +115,7 @@ namespace Ken_test
             app.UseDefaultFiles(new DefaultFilesOptions()
             {
                 FileProvider = fileProvider,
-                DefaultFileNames = new[] { "index.html" }
+                DefaultFileNames = new[] { "login.html" }
             });
       
             app.UseCookiePolicy();

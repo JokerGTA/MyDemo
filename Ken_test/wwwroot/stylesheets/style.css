@@ -4,25 +4,23 @@
 * @Last Modified by:   sublime text
 * @Last Modified time: 2015-10-05 21:07:47
 */
-
- /*                                                                  全局                      */
-
-.login{
-	background: url('../images/login_bg.jpg') no-repeat fixed top;
-	background-size: cover;
+/* 全局*/
+.login {
+    background: url('../images/login_bg.jpg') no-repeat fixed top;
+    min-height: 800px;
+    background-size: cover;
 }
-.rooms{
-
-	background: url('../images/theme/1_bg.jpg') no-repeat fixed top;
-	background-size: cover;
+.rooms {
+    background: url('../images/theme/1_bg.jpg') no-repeat fixed top;
+    min-height: 800px;
+    background-size: cover;
 }
-.room{
-	background: url('../images/theme/12_mh.jpg') no-repeat fixed top;
-	background-size: cover
+.room {
+    background: url('../images/theme/12_mh.jpg') no-repeat fixed top;
+    background-size: cover;
+    min-height:800px;
+    background-attachment: fixed;    
 }
-
-
-
 
 body>.scrollbar-macosx{
 	position: absolute;

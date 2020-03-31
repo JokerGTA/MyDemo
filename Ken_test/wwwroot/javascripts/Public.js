@@ -4,6 +4,7 @@ $(document).ready(function () {
     var userCookie = $.cookie('chatUserInfo');
     var requestHref = window.location.toString();    
     var isHaveCookies = userCookie == undefined || userCookie.lenth == 0 ? false : true;
+    var isHaveUserTheme = $.cookie('chatUserTheme') == undefined || $.cookie('chatUserTheme').lenth == 0 ? false : true;
     if (requestHref.indexOf("login.html") == -1) {
         if (!isHaveCookies) {
             layer.msg('用户信息已过期，请滚粗~', function () {
@@ -26,7 +27,7 @@ $(document).ready(function () {
     function setUserInfo() {
         setUserName($.parseJSON(userCookie)["chatUserName"]);
         setUserPic($.parseJSON(userCookie)["chatUserPortrait"])
-        var theme_id = isHaveCookies ? $.cookie('chatUserTheme') : 1;
+        var theme_id = isHaveUserTheme ? $.cookie('chatUserTheme') : 1;
         $('body').css('background-image', 'url(../images/theme/' + theme_id + '_bg.jpg)');
     }
 

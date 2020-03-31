@@ -104,7 +104,7 @@
             <typeparam name="TEntity"></typeparam>
             <param name="webSocket"></param>
             <param name="entity"></param>
-            <param name="userid"></param>
+            <param name="userName"></param>
             <returns></returns>
         </member>
         <member name="M:Ken_test.Middlewares.WebSocketHandler.AdminSendMessage``1(``0)">

@@ -5,7 +5,7 @@ var uri = "wss://" + window.location.host + "/ws?userId=" + returnCitySN["cip"] 
 $(document).ready(function () {
     // 创建Websocket链接
     load_init();
-    function load_init() {
+    function load_init() {        
         socket = new WebSocket(uri);
         socket.binaryType = "arraybuffer";
         socket.onopen = function (e) { console.log("已连接至服务器"); };
@@ -59,7 +59,9 @@ $(document).ready(function () {
             if (socket.readyState === 1) {
                 socket.send(str);
             } else {
-                layer.Msg("已与服务器断开连接");
+                layer.msg("已与服务器断开连接，重新连接中....");                
+                socket = new WebSocket(uri);
+                socket.onopen = function (e) { socket.send(str);};
             }
             sends_message(userName, userHeadPic, str); // sends_message(昵称,头像id,聊天内容);
 

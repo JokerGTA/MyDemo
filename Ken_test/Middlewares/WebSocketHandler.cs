@@ -15,7 +15,7 @@ namespace Ken_test.Middlewares
 {
     public static class WebSocketHandler
     {
-        static List<WebSocket> webSockets { get; set; } = new List<WebSocket>();
+        static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         static Dictionary<string, SocketObject> dicWebsockets { get; set; } = new Dictionary<string, SocketObject>();
         /// <summary>
         /// 路由绑定处理
@@ -34,21 +34,30 @@ namespace Ken_test.Middlewares
         /// <returns></returns>
         private static async Task Acceptor(HttpContext httpContext, Func<Task> next)
         {
+            try
+            {
+                if (!httpContext.WebSockets.IsWebSocketRequest)
+                    return;
+                UserWebsoketDto userInfo = new UserWebsoketDto();
+                string userId = httpContext.Request.Query["userId"].ToArray()[0];
+                string userName = httpContext.Request.Query["userName"].ToArray()[0];
+                string userHeadPic = httpContext.Request.Query["userHeadPic"].ToArray()[0];
+                userInfo.UserId = userId;
+                userInfo.UserName = userName;
+                userInfo.UserHeadPic = userHeadPic;
+                _logger.Debug("开始创建websocket.....");
+                var socket = await httpContext.WebSockets.AcceptWebSocketAsync();
+                if (dicWebsockets.ContainsKey(userName))
+                    dicWebsockets.Remove(userName);
+                dicWebsockets.Add(userName, new SocketObject { UserWebsoket = userInfo, WebSocket = socket });
 
-            if (!httpContext.WebSockets.IsWebSocketRequest)
-                return;
-            UserWebsoketDto userInfo = new UserWebsoketDto();
-            string userId = httpContext.Request.Query["userId"].ToArray()[0];
-            string userName = httpContext.Request.Query["userName"].ToArray()[0];
-            string userHeadPic = httpContext.Request.Query["userHeadPic"].ToArray()[0];
-            userInfo.UserId = userId;
-            userInfo.UserName = userName;
-            userInfo.UserHeadPic = userHeadPic;
-            var socket = await httpContext.WebSockets.AcceptWebSocketAsync();
-            if (!dicWebsockets.ContainsKey(userId))
-                dicWebsockets.Add(userId, new SocketObject { UserWebsoket = userInfo, WebSocket = socket });
-
-            var result = await RecvAsync(userInfo, socket, CancellationToken.None);
+                _logger.Debug($"服务端建立websockect链接{userId}||{userName}");
+                await RecvAsync(userInfo, socket, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug($"又特么异常了啊啊啊啊啊啊：{ex.Message.ToString()}");
+            }
         }
 
         /// <summary>
@@ -58,42 +67,51 @@ namespace Ken_test.Middlewares
         /// <param name="webSocket">webSocket 对象</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private static async Task<string> RecvAsync(UserWebsoketDto userInfo, WebSocket webSocket, CancellationToken cancellationToken)
+        private static async Task RecvAsync(UserWebsoketDto userInfo, WebSocket webSocket, CancellationToken cancellationToken)
         {
-            string userid = userInfo.UserId;
             List<string> oldRequestParam = new List<string>();
             WebSocketReceiveResult result;
-            do
+            try
             {
-                var ms = new MemoryStream();
-                var buffer = new ArraySegment<byte>(new byte[1024 * 8]);
-
-                result = await webSocket.ReceiveAsync(buffer, cancellationToken);
-                if (result.MessageType.ToString() == "Close")
+                do
                 {
-                    break;
-                }
-                ms.Write(buffer.Array, buffer.Offset, result.Count - buffer.Offset);
-                ms.Seek(0, SeekOrigin.Begin);
-                var reader = new StreamReader(ms);
-                string s = reader.ReadToEnd();
-                reader.Dispose();
-                ms.Dispose();
-                if (!string.IsNullOrEmpty(s))
-                {
-                    SocketMessage socketMessage = new SocketMessage
+                    var ms = new MemoryStream();
+                    var buffer = new ArraySegment<byte>(new byte[1024 * 8]);
+                    _logger.Debug($"等待发送信息...");
+                    result = await webSocket.ReceiveAsync(buffer, cancellationToken);
+                    if (result.MessageType.ToString() == "Close")
                     {
-                        UserName = userInfo.UserName,
-                        UserHeadPic = userInfo.UserHeadPic,
-                        Msg = s
-                    };
-                    await SendMessage(webSocket, socketMessage, userid);
-                }
-                oldRequestParam.Add(s);
+                        break;
+                    }
+                    ms.Write(buffer.Array, buffer.Offset, result.Count - buffer.Offset);
+                    ms.Seek(0, SeekOrigin.Begin);
+                    var reader = new StreamReader(ms);
+                    string s = reader.ReadToEnd();
+                    reader.Dispose();
+                    ms.Dispose();
+                    if (!string.IsNullOrEmpty(s))
+                    {
+                        SocketMessage socketMessage = new SocketMessage
+                        {
+                            UserName = userInfo.UserName,
+                            UserHeadPic = userInfo.UserHeadPic,
+                            Msg = s
+                        };
+                        await SendMessage(webSocket, socketMessage, userInfo.UserName);
+                    }
+                    oldRequestParam.Add(s);
 
-            } while (result.EndOfMessage);
+                } while (result.EndOfMessage);
 
-            return "";
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug($"发消息后的异常：{ex.Message.ToString()}");
+            }
+            finally
+            {
+                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Close", default(CancellationToken));
+            }
         }
 
         private class SocketMessage
@@ -114,23 +132,37 @@ namespace Ken_test.Middlewares
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="webSocket"></param>
         /// <param name="entity"></param>
-        /// <param name="userid"></param>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        private static async Task SendMessage<TEntity>(WebSocket webSocket, TEntity entity, string userid)
+        private static async Task SendMessage<TEntity>(WebSocket webSocket, TEntity entity, string userName)
         {
             var Json = JsonConvert.SerializeObject(entity);
             var bytes = Encoding.UTF8.GetBytes(Json);
 
             foreach (var item in dicWebsockets)
             {
-                if (item.Key != userid)
+                if (item.Key != userName)
                 {
-                    await item.Value.WebSocket.SendAsync(
-                        new ArraySegment<byte>(bytes),
-                        WebSocketMessageType.Text,
-                        true,
-                        CancellationToken.None
-                    );
+                    _logger.Debug($"{userName}发送消息给{item.Key}");
+                    try
+                    {
+                        if (item.Value.WebSocket != null && item.Value.WebSocket.State.ToString() != "Closed")
+                        {
+                            await item.Value.WebSocket.SendAsync(
+                            new ArraySegment<byte>(bytes),
+                            WebSocketMessageType.Text,
+                            true,
+                            CancellationToken.None);
+                        }
+                        else
+                        {
+                            _logger.Debug($"{item.Key}不存在或已关闭");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Debug($"发消息时的异常：{item.Value.WebSocket.State.ToString()}||{ex.Message.ToString()}");
+                    }
                 }
             }
         }
@@ -142,18 +174,19 @@ namespace Ken_test.Middlewares
         /// <param name="entity"></param>
         /// <returns></returns>
         public static async void AdminSendMessage<TEntity>(TEntity entity)
+
         {
             var Json = JsonConvert.SerializeObject(entity);
             var bytes = Encoding.UTF8.GetBytes(Json);
 
-            foreach (var webSocket in webSockets)
-            {
-                await webSocket.SendAsync(
-                new ArraySegment<byte>(bytes),
-                WebSocketMessageType.Text,
-                true,
-                CancellationToken.None);
-            }
+            //foreach (var webSocket in webSockets)
+            //{
+            //    await webSocket.SendAsync(
+            //    new ArraySegment<byte>(bytes),
+            //    WebSocketMessageType.Text,
+            //    true,
+            //    CancellationToken.None);
+            //}
         }
 
 
