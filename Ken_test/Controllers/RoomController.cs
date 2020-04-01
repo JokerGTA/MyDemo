@@ -41,6 +41,23 @@ namespace Ken_test.Controllers
         }
 
         /// <summary>
+        /// 获取聊天室数据
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("data")]
+        //[ApiFilter(ApiType = ApiType.Admin)]
+        public IActionResult GetMessage()
+        {
+            var messages = _boProvider._messageLogRepo.GetLastTwenty();
+            var result = new RoomDataDto
+            {
+                OnlineUser = WebSocketHandler.GetOnlineUserData(),
+                OldMessage = _boProvider._mapper.Map<List<MessageRoomDto>>(messages)
+            };
+            return Ok(result);
+        }
+
+        /// <summary>
         /// 获取消息
         /// </summary>
         /// <returns></returns>

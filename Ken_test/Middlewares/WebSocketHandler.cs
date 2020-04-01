@@ -1,4 +1,8 @@
-﻿using Ken_test.Dtos;
+﻿using Ken_test.Bos;
+using Ken_test.Dtos;
+using Ken_test.Models;
+using Ken_test.Models.Enums;
+using Ken_test.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -17,6 +21,7 @@ namespace Ken_test.Middlewares
     {
         static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         static Dictionary<string, SocketObject> dicWebsockets { get; set; } = new Dictionary<string, SocketObject>();
+        static BoPriver _boProvider;
         /// <summary>
         /// 路由绑定处理
         /// </summary>
@@ -27,32 +32,69 @@ namespace Ken_test.Middlewares
         }
 
         /// <summary>
+        /// 获取在线用户信息
+        /// </summary>
+        /// <returns></returns>
+        public static List<UserWebsoketDto> GetOnlineUserData()
+        {
+            List<UserWebsoketDto> userWebsoketDtos = new List<UserWebsoketDto>();
+            foreach (var item in dicWebsockets)
+            {
+                UserWebsoketDto userWebsoketDto = new UserWebsoketDto
+                {
+                    UserName = item.Value.UserWebsoket.NickName,
+                    UserHeadPic = item.Value.UserWebsoket.HeadPicture,
+                };
+                userWebsoketDtos.Add(userWebsoketDto);
+            }
+            return userWebsoketDtos;
+        }
+
+        private static void SaveChange()
+        {
+            _boProvider._context.SaveChanges();
+        }
+
+        /// <summary>
         /// 创建链接
         /// </summary>
         /// <param name="httpContext"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        private static async Task Acceptor(HttpContext httpContext, Func<Task> next)
+        private async static Task Acceptor(HttpContext httpContext, Func<Task> next)
         {
+            _boProvider = (BoPriver)httpContext.RequestServices.GetService(typeof(BoPriver)); // 这句可太NB了
             try
             {
                 if (!httpContext.WebSockets.IsWebSocketRequest)
                     return;
-                UserWebsoketDto userInfo = new UserWebsoketDto();
-                string userId = httpContext.Request.Query["userId"].ToArray()[0];
-                string userName = httpContext.Request.Query["userName"].ToArray()[0];
-                string userHeadPic = httpContext.Request.Query["userHeadPic"].ToArray()[0];
-                userInfo.UserId = userId;
-                userInfo.UserName = userName;
-                userInfo.UserHeadPic = userHeadPic;
-                _logger.Debug("开始创建websocket.....");
+                UserInfo userInfo = new UserInfo();
+                userInfo.IPAddress = httpContext.Request.Query["userId"].ToArray()[0]; // userId暂时用ip替代
+                userInfo.NickName = httpContext.Request.Query["userName"].ToArray()[0];
+                userInfo.HeadPicture = httpContext.Request.Query["userHeadPic"].ToArray()[0];
                 var socket = await httpContext.WebSockets.AcceptWebSocketAsync();
-                if (dicWebsockets.ContainsKey(userName))
-                    dicWebsockets.Remove(userName);
-                dicWebsockets.Add(userName, new SocketObject { UserWebsoket = userInfo, WebSocket = socket });
+                if (dicWebsockets.ContainsKey(userInfo.NickName))
+                    dicWebsockets.Remove(userInfo.NickName);
+                dicWebsockets.Add(userInfo.NickName, new SocketObject { UserWebsoket = userInfo, WebSocket = socket });
+                UserInfo user = _boProvider._userInfoRepo.GetByName(userInfo.NickName);
+                if (user == null)
+                {
+                    user = userInfo;
+                    user.MessageLogs = new List<MessageLog>() { };
+                    _boProvider._context.UserInfos.Add(user);
+                    SaveChange();
+                }
 
-                _logger.Debug($"服务端建立websockect链接{userId}||{userName}");
-                await RecvAsync(userInfo, socket, CancellationToken.None);
+                _logger.Debug($"服务端建立websockect链接{userInfo.IPAddress}||{userInfo.NickName}");
+                // 建立连接后发送该用户进入聊天室提示信息 
+                await SendMessage(socket, new SocketMessage
+                {
+                    WsType = WsMessageTypeEnum.Enter,
+                    UserName = userInfo.NickName,
+                    UserHeadPic = userInfo.HeadPicture,                    
+                }, userInfo.NickName);
+               
+                await RecvAsync(user, socket, CancellationToken.None);
             }
             catch (Exception ex)
             {
@@ -67,7 +109,7 @@ namespace Ken_test.Middlewares
         /// <param name="webSocket">webSocket 对象</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private static async Task RecvAsync(UserWebsoketDto userInfo, WebSocket webSocket, CancellationToken cancellationToken)
+        private static async Task RecvAsync(UserInfo userInfo, WebSocket webSocket, CancellationToken cancellationToken)
         {
             List<string> oldRequestParam = new List<string>();
             WebSocketReceiveResult result;
@@ -93,11 +135,16 @@ namespace Ken_test.Middlewares
                     {
                         SocketMessage socketMessage = new SocketMessage
                         {
-                            UserName = userInfo.UserName,
-                            UserHeadPic = userInfo.UserHeadPic,
+                            WsType = WsMessageTypeEnum.Chat,
+                            UserName = userInfo.NickName,
+                            UserHeadPic = userInfo.HeadPicture,
                             Msg = s
                         };
-                        await SendMessage(webSocket, socketMessage, userInfo.UserName);
+                        MessageLog messageLog = new MessageLog { MsgContext = s };
+                        userInfo.MessageLogs.Add(messageLog);
+                        _boProvider._context.UserInfos.Update(userInfo);
+                        await SendMessage(webSocket, socketMessage, userInfo.NickName);
+                        SaveChange();
                     }
                     oldRequestParam.Add(s);
 
@@ -116,6 +163,7 @@ namespace Ken_test.Middlewares
 
         private class SocketMessage
         {
+            public WsMessageTypeEnum WsType { get; set; }
             public string UserName { get; set; }
             public string UserHeadPic { get; set; }
             public string Msg { get; set; }
@@ -123,7 +171,7 @@ namespace Ken_test.Middlewares
 
         private class SocketObject
         {
-            public UserWebsoketDto UserWebsoket { get; set; }
+            public UserInfo UserWebsoket { get; set; }
             public WebSocket WebSocket { get; set; }
         }
         /// <summary>

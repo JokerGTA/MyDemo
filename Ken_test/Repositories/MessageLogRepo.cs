@@ -31,5 +31,10 @@ namespace Ken_test.Repositories
         {
             return _context.MessageLogs.ToList();
         }
+
+        public List<MessageLog> GetLastTwenty()
+        {
+            return _context.MessageLogs.OrderByDescending(m=>m.Id).Take(10).OrderBy(m=>m.Id).ToList();
+        }
     }
 }

@@ -5,10 +5,10 @@ var uri = "wss://" + window.location.host + "/ws?userId=" + returnCitySN["cip"] 
 $(document).ready(function () {
     // 创建Websocket链接
     load_init();
-    function load_init() {        
+    function load_init() {
         socket = new WebSocket(uri);
         socket.binaryType = "arraybuffer";
-        socket.onopen = function (e) { console.log("已连接至服务器"); };
+        socket.onopen = function (e) { console.log("已连接至服务器"); refreshRoomData(); };
         socket.onclose = function (e) { console.log("链接已关闭"); };
         socket.onmessage = function (e) { receive_message(e.data); };
         socket.onerror = function (e) { console.log(e); doclose(); };
@@ -20,15 +20,37 @@ $(document).ready(function () {
         }
     }
 
+
+    // 更新房间内数据
+    function refreshRoomData() {
+        $.ajax({
+            url: '/api/room/data',
+            type: 'get',
+            async: false,
+            success: function (data) {
+                console.log(data);
+                $.each(data.onlineUser, function (index, value) {
+                    $("#onlineUserList").append("<li><img src='../images/user/" + value["userHeadPic"] + ".png' alt='portrait_1'<b>" + value["userName"] + "</b></li>");
+                });
+                $("#onlineUserNum").html("在线用户" + data.onlineUser.length + "人");
+
+                $.each(data.oldMessage, function (index, value) {
+                    $(".chat_info").append("<li class='left' style='color: gray'><img src='../images/user/" + value["headPicture"] + ".png' alt='portrait_1'<b>" + value["nickName"] + "</b> <i>" + value["createTime"] + "</i><div>" + value["msgContext"] + "</div></li>");
+                });
+                $(".chat_info").append("<li class='systeminfo'><span>【" + userName+"】加入了房间</span></li>");
+         
+            },
+            error: function (data) {
+                layer.msg(data.responseText);
+            }
+        });
+
+    }
+
     // 发送图片
     $('.imgFileBtn').change(function (event) {
-
-
         var str = '<img src="../images/chatimg/' + '1/201503/agafsdfeaef.jpg' + '" />'
-
         sends_message('绿巨人', 1, str); // sends_message(昵称,头像id,聊天内容);
-
-
         // 滚动条滚到最下面
         $('.scrollbar-macosx.scroll-content.scroll-scrolly_visible').animate({
             scrollTop: $('.scrollbar-macosx.scroll-content.scroll-scrolly_visible').prop('scrollHeight')
@@ -59,9 +81,9 @@ $(document).ready(function () {
             if (socket.readyState === 1) {
                 socket.send(str);
             } else {
-                layer.msg("已与服务器断开连接，重新连接中....");                
+                layer.msg("已与服务器断开连接，重新连接中....");
                 socket = new WebSocket(uri);
-                socket.onopen = function (e) { socket.send(str);};
+                socket.onopen = function (e) { socket.send(str); };
             }
             sends_message(userName, userHeadPic, str); // sends_message(昵称,头像id,聊天内容);
 
@@ -85,10 +107,19 @@ $(document).ready(function () {
 
     // 接收他人的消息
     function receive_message(message) {
+        debugger
         var obj = $.parseJSON(message)
-        if (message != '') {
-            $('.main .chat_info').html($('.main .chat_info').html() + '<li class="left"><img src="../images/user/' + obj["UserHeadPic"] + '.png" alt=""><b>' + obj["UserName"] + '</b><i>' + get_nowDate() + '</i><div class="aaa">' + obj["Msg"] + '</div></li>');
+        if (obj["WsType"] == 0) {
+            $('.main .chat_info').append('<li class="left"><img src="../images/user/' + obj["UserHeadPic"] + '.png" alt=""><b>' + obj["UserName"] + '</b><i>' + get_nowDate() + '</i><div class="aaa">' + obj["Msg"] + '</div></li>');
         }
+        else {
+            $(".main .chat_info").append("<li class='systeminfo'><span>【" + obj["UserName"] + "】加入了房间</span></li>");
+        }
+
+        // 滚动条滚到最下面
+        $('.scrollbar-macosx.scroll-content.scroll-scrolly_visible').animate({
+            scrollTop: $('.scrollbar-macosx.scroll-content.scroll-scrolly_visible').prop('scrollHeight')
+        }, 500);
     }
 
     // 获取当前时间

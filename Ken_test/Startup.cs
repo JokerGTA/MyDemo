@@ -151,7 +151,7 @@ namespace Ken_test
             //});
 
             app.Map("/ws", WebSocketHandler.Map);
-
+      
 
 
             app.UseStaticFiles(new StaticFileOptions()

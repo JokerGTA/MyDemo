@@ -24,7 +24,12 @@ namespace Ken_test.Repositories
 
         public UserInfo GetByIp(string ip)
         {
-            return _context.UserInfos.FirstOrDefault(m=>m.NickName == ip);            
+            return _context.UserInfos.FirstOrDefault(m=>m.IPAddress == ip);            
+        }
+
+        public UserInfo GetByName(string name)
+        {
+            return _context.UserInfos.FirstOrDefault(m => m.NickName == name);
         }
     }
 }

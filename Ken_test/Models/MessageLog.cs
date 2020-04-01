@@ -13,7 +13,7 @@ namespace Ken_test.Models
         public string MsgContext { get; set; }
 
         public int UserId { get; set; }
-
+        
         [ForeignKey("UserId")]
         public virtual UserInfo UserInfo { get; set; }
     }
