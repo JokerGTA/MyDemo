@@ -26,7 +26,7 @@ $(document).ready(function () {
         $.ajax({
             url: '/api/room/data',
             type: 'get',
-            async: false,
+            async: true,
             success: function (data) {
                 console.log(data);
                 $.each(data.onlineUser, function (index, value) {
@@ -37,8 +37,8 @@ $(document).ready(function () {
                 $.each(data.oldMessage, function (index, value) {
                     $(".chat_info").append("<li class='left' style='color: gray'><img src='../images/user/" + value["headPicture"] + ".png' alt='portrait_1'<b>" + value["nickName"] + "</b> <i>" + value["createTime"] + "</i><div>" + value["msgContext"] + "</div></li>");
                 });
-                $(".chat_info").append("<li class='systeminfo'><span>【" + userName+"】加入了房间</span></li>");
-         
+                $(".chat_info").append("<li class='systeminfo'><span>【" + userName + "】加入了房间</span></li>");
+
             },
             error: function (data) {
                 layer.msg(data.responseText);

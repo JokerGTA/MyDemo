@@ -45,8 +45,8 @@ $(document).ready(function () {
         userInfo.chatUserName = userName;
         userInfo.chatUserPortrait = userPortrait;
         userInfo.chatUserIp = returnCitySN["cip"];
-
         $.cookie('chatUserInfo', JSON.stringify(userInfo), { expires: 7 });  // { expires: 7, path: '/' }有效路径
+        saveUserInfo();
         window.location.href = 'index.html'; // 页面跳转
     });
 
@@ -63,9 +63,29 @@ $(document).ready(function () {
         userInfo.chatUserName = userName;
         userInfo.chatUserPortrait = userPortrait;
         $.cookie('chatUserInfo', JSON.stringify(userInfo), { expires: 7 });
+        saveUserInfo();
         setUserName(userName);
         setUserPic(userPortrait);
     });
+
+    // 服务端保存用户信息
+    function saveUserInfo() {
+        $.ajax({
+            async: true,
+            type: "post",
+            data: {
+                NickName: $.parseJSON($.cookie('chatUserInfo'))["chatUserName"],
+                IPAddress: returnCitySN["cip"],
+                HeadPicture: $.parseJSON($.cookie('chatUserInfo'))["chatUserPortrait"]
+            },
+            url: "/api/user/save",
+            success: function (data) {
+
+            }
+
+        });
+
+    }
 
     // 设置用户名称
     function setUserName(userName) {
