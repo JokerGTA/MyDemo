@@ -1,7 +1,8 @@
 ﻿var socket;
 var userName = $.parseJSON($.cookie('chatUserInfo'))["chatUserName"];
 var userHeadPic = $.parseJSON($.cookie('chatUserInfo'))["chatUserPortrait"];
-var uri = "wss://" + window.location.host + "/ws?userId=" + returnCitySN["cip"] + "&&userName=" + userName + "&&userHeadPic=" + userHeadPic;// "/api/room/receive"
+var uri = "wss://" + window.location.host + "/ws?userId=opt8d5G0lF5RBhA6CK63Ad8ezwiM&userName=%F0%9F%8D%93Elon&userHeadPic=https://wx.qlogo.cn/mmopen/vi_32/cRia1doM7SIbtOC7FgaNAricvw8k5hV00VM5BGt6323LhpLCCkvXESSicXgeumLzbdm9XO1rbe9LlErmQAxWb7Kaw/132wss://www.93yz95rz.club/ws?userId=opt8d5G0lF5RBhA6CK63Ad8ezwiM&userName=%F0%9F%8D%93Elon&userHeadPic=https://wx.qlogo.cn/mmopen/vi_32/cRia1doM7SIbtOC7FgaNAricvw8k5hV00VM5BGt6323LhpLCCkvXESSicXgeumLzbdm9XO1rbe9LlErmQAxWb7Kaw/132"
+//var uri = "wss://" + window.location.host + "/ws?userId=" + returnCitySN["cip"] + "&&userName=" + userName + "&&userHeadPic=" + userHeadPic;// "/api/room/receive"
 $(document).ready(function () {
     // 创建Websocket链接
     load_init();

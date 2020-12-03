@@ -10,6 +10,11 @@
             </summary>
             <param name="input"></param>
         </member>
+        <member name="M:Ken_test.Bos.UserBo.Authority">
+            <summary>
+            利用位运算进行权限管理
+            </summary>
+        </member>
         <member name="M:Ken_test.Common.ClientHelper.GetClientUserIp(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
             获取客户Ip
@@ -22,6 +27,39 @@
             保存用户信息
             </summary>
             <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ken_test.Controllers.IndexController.HomeIndex">
+            <summary>
+            获取首页
+            </summary>
+        </member>
+        <member name="M:Ken_test.Controllers.MusicController.GetMusicList(System.Int32,System.String,System.Int32,System.Int32)">
+            <summary>
+            获取音乐列表
+            </summary>
+            <param name="musicFileId"></param>
+            <param name="token"></param>
+            <param name="pageSize"></param>
+            <param name="pageIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ken_test.Controllers.MusicController.GetMusicFileList(System.String)">
+            <summary>
+            获取音乐文件夹
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ken_test.Controllers.PublicController.ConvertFileName">
+            <summary>
+            文件重命名
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ken_test.Controllers.PublicController.AutoGenerationSQL">
+            <summary>
+            自动生成sql
+            </summary>
             <returns></returns>
         </member>
         <member name="M:Ken_test.Controllers.RoomController.SubmitMessage(System.String,System.String)">
@@ -96,6 +134,51 @@
         <member name="P:Ken_test.Dtos.MessgesDtoF.UserName">
             <summary>
             发送人姓名
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.MusicDtoF.Url">
+            <summary>
+            音乐地址
+            </summary>        
+        </member>
+        <member name="P:Ken_test.Dtos.MusicDtoF.CoverImgUrl">
+            <summary>
+            封面图片地址
+            </summary>        
+        </member>
+        <member name="P:Ken_test.Dtos.MusicDtoF.Title">
+            <summary>
+            音乐标题
+            </summary>        
+        </member>
+        <member name="P:Ken_test.Dtos.MusicDtoF.Sort">
+            <summary>
+            排序
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.MusicDtoF.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.MusicFileDtoF.Name">
+            <summary>
+            文件夹名称
+            </summary>        
+        </member>
+        <member name="P:Ken_test.Dtos.MusicFileDtoF.CoverUrl">
+            <summary>
+            文件夹封面图片
+            </summary>        
+        </member>
+        <member name="P:Ken_test.Dtos.MusicFileDtoF.Count">
+            <summary>
+            所含数量
+            </summary>
+        </member>
+        <member name="P:Ken_test.Dtos.MusicFileDtoF.CreateTime">
+            <summary>
+            创建时间
             </summary>
         </member>
         <member name="P:Ken_test.Dtos.RoomDataDto.OnlineUser">
@@ -198,6 +281,51 @@
         <member name="P:Ken_test.Models.BaseModel.IsDeleted">
             <summary>
             逻辑删除
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.Music.Url">
+            <summary>
+            音乐地址
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.Music.CoverImgUrl">
+            <summary>
+            封面图片地址
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.Music.Title">
+            <summary>
+            音乐标题
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.Music.Sort">
+            <summary>
+            排序
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.Music.MusicFileId">
+            <summary>
+            关联音乐文件夹外键
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.MusicFile.Name">
+            <summary>
+            文件夹名称
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.MusicFile.CoverUrl">
+            <summary>
+            文件夹封面图片
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.MusicFile.Count">
+            <summary>
+            所含数量
+            </summary>
+        </member>
+        <member name="P:Ken_test.Models.MusicFile.Musics">
+            <summary>
+            所含音乐
             </summary>
         </member>
         <member name="P:Ken_test.Models.UserInfo.NickName">

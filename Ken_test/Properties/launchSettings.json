@@ -13,6 +13,7 @@
       "launchBrowser": true,
       //"launchUrl": "swagger",
       "launchUrl": "index/login.html",
+      //"launchUrl": "index",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

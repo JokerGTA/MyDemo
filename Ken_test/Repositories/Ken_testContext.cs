@@ -9,9 +9,11 @@ namespace Ken_test.Repositories
 {
     public class Ken_testContext : DbContext
     {
-        public Ken_testContext(DbContextOptions<Ken_testContext> options) : base(options){}
+        public Ken_testContext(DbContextOptions<Ken_testContext> options) : base(options) { }
         public virtual DbSet<UserInfo> UserInfos { get; set; }
         public virtual DbSet<MessageLog> MessageLogs { get; set; }
+        public virtual DbSet<MusicFile> MusicFiles { get; set; }
+        public virtual DbSet<Music> Musics { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +27,27 @@ namespace Ken_test.Repositories
             modelBuilder.Entity<MessageLog>(e =>
             {
                 e.ToTable("message_log");
+                e.Property(b => b.IsDeleted).HasDefaultValue(false);
+                e.HasQueryFilter(b => !b.IsDeleted);
+            });
+
+            modelBuilder.Entity<Music>(e =>
+            {
+                e.ToTable("ken_music");
+                
+                e.HasOne(p => p.MusicFile)
+                .WithMany(p => p.Musics)
+                .HasForeignKey(p => p.MusicFileId)
+                .HasPrincipalKey(p => p.Id)
+                .OnDelete(DeleteBehavior.SetNull);
+
+                e.Property(b => b.IsDeleted).HasDefaultValue(false);
+                e.HasQueryFilter(b => !b.IsDeleted);
+            });
+
+            modelBuilder.Entity<MusicFile>(e =>
+            {
+                e.ToTable("ken_music_file");
                 e.Property(b => b.IsDeleted).HasDefaultValue(false);
                 e.HasQueryFilter(b => !b.IsDeleted);
             });
@@ -120,5 +143,5 @@ namespace Ken_test.Repositories
             }
         }
     }
-    
+
 }

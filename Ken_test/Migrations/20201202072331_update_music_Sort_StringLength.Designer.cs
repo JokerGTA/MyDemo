@@ -3,14 +3,16 @@ using System;
 using Ken_test.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Ken_test.Migrations
 {
     [DbContext(typeof(Ken_testContext))]
-    partial class Ken_testContextModelSnapshot : ModelSnapshot
+    [Migration("20201202072331_update_music_Sort_StringLength")]
+    partial class update_music_Sort_StringLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,8 +64,6 @@ namespace Ken_test.Migrations
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(false);
 
-                    b.Property<int>("MusicFileId");
-
                     b.Property<int>("Sort");
 
                     b.Property<string>("Title")
@@ -74,37 +74,7 @@ namespace Ken_test.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MusicFileId");
-
                     b.ToTable("ken_music");
-                });
-
-            modelBuilder.Entity("Ken_test.Models.MusicFile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("Count");
-
-                    b.Property<string>("CoverUrl")
-                        .HasMaxLength(200);
-
-                    b.Property<DateTime>("CreateTime")
-                        .HasColumnType("DateTime");
-
-                    b.Property<DateTime?>("EditTime")
-                        .HasColumnType("DateTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(50);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ken_music_file");
                 });
 
             modelBuilder.Entity("Ken_test.Models.UserInfo", b =>
@@ -148,14 +118,6 @@ namespace Ken_test.Migrations
                         .WithMany("MessageLogs")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Ken_test.Models.Music", b =>
-                {
-                    b.HasOne("Ken_test.Models.MusicFile", "MusicFile")
-                        .WithMany("Musics")
-                        .HasForeignKey("MusicFileId")
-                        .OnDelete(DeleteBehavior.SetNull);
                 });
 #pragma warning restore 612, 618
         }

@@ -3,14 +3,16 @@ using System;
 using Ken_test.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Ken_test.Migrations
 {
     [DbContext(typeof(Ken_testContext))]
-    partial class Ken_testContextModelSnapshot : ModelSnapshot
+    [Migration("20201203064141_add_table_MusicFile")]
+    partial class add_table_MusicFile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

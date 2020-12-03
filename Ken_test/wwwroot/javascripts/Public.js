@@ -4,8 +4,13 @@ $(document).ready(function () {
     var userCookie = $.cookie('chatUserInfo');
     var requestHref = window.location.toString();    
     var isHaveCookies = userCookie == undefined || userCookie.lenth == 0 ? false : true;
-    var isHaveUserTheme = $.cookie('chatUserTheme') == undefined || $.cookie('chatUserTheme').lenth == 0 ? false : true;
-    if (requestHref.indexOf("login.html") == -1) {
+    var isHaveUserTheme = $.cookie('chatUserTheme') == undefined || $.cookie('chatUserTheme').lenth == 0 ? false : true;    
+	if (requestHref=="https://www.93yz95rz.club/"||requestHref == "https://93yz95rz.club" || requestHref == "https://93yz95rz.club/login.html") {
+        if (isHaveCookies) {
+            window.location.href = 'index/index.html';
+        } 
+    }
+    else {
         if (!isHaveCookies) {
             layer.msg('用户信息已过期，请滚粗~', function () {
                 window.location.href = 'login.html';
@@ -15,11 +20,6 @@ $(document).ready(function () {
             if (requestHref.indexOf("index.html") > 0) {
                 setUserInfo();
             }
-        }
-    }
-    else {
-        if (isHaveCookies) {
-            window.location.href = 'index.html';
         }
     }
 
@@ -47,7 +47,7 @@ $(document).ready(function () {
         userInfo.chatUserIp = returnCitySN["cip"];
         $.cookie('chatUserInfo', JSON.stringify(userInfo), { expires: 7 });  // { expires: 7, path: '/' }有效路径
         saveUserInfo();
-        window.location.href = 'index.html'; // 页面跳转
+        window.location.href = 'index/index.html'; // 页面跳转
     });
 
     // ------------------------选择聊天室页面-----------------------------------------------

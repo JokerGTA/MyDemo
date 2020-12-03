@@ -7,25 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Ken_test.Controllers
 {
-    [ApiController]
-    [Route("api/index")]
-    public class IndexController : Controller
+    public class WeChatController : Controller
     {
         private readonly BoPriver _boProvider;
         private NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-        public IndexController(BoPriver boPriver)
+        public WeChatController(BoPriver boPriver)
         {
             _boProvider = boPriver;
         }
 
-        /// <summary>
-        /// 获取首页
-        /// </summary>
-        [HttpGet()]
-        public IActionResult HomeIndex()
-        {
-            return View("index");
-        }
+
 
     }
 }

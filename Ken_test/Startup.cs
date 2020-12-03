@@ -76,13 +76,16 @@ namespace Ken_test
             if (!_hostingEnvironment.IsProduction())
                 services.AddSwaggerGen(c =>
                 {
-                    c.SwaggerDoc("v1", new Info { Title = "Ken_test API", Version = "v1",
-                       Contact = new Contact
+                    c.SwaggerDoc("v1", new Info
+                    {
+                        Title = "Ken_test API",
+                        Version = "v1",
+                        Contact = new Contact
                         {
                             Name = "本是青灯不归客，却因浊酒留风尘。赶路已有清风伴，莫叹岁月不饶人。",
                             Email = "",
                             Url = "http://www.93yz95rz.club"
-                       }
+                        }
                     });
                     var xmlFile = $"{Assembly.GetEntryAssembly().GetName().Name}.xml";
                     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -112,12 +115,13 @@ namespace Ken_test
             app.UseHttpsRedirection();
             app.UseCors("AllowDomain");
 
-            app.UseDefaultFiles(new DefaultFilesOptions()
-            {
-                FileProvider = fileProvider,
-                DefaultFileNames = new[] { "login.html" }
-            });
+            DefaultFilesOptions defaultFilesOptions = new DefaultFilesOptions();
+            defaultFilesOptions.DefaultFileNames.Clear();
+            defaultFilesOptions.DefaultFileNames.Add("index/login.html");
+            app.UseDefaultFiles(defaultFilesOptions);
+
       
+
             app.UseCookiePolicy();
 
             var webSocketOptions = new WebSocketOptions()
@@ -151,25 +155,29 @@ namespace Ken_test
             //});
 
             app.Map("/ws", WebSocketHandler.Map);
-      
 
-
+#if RELEASE
+            string absolute = Path.Combine(@"/opt/cloudreve/uploads", @"1");
             app.UseStaticFiles(new StaticFileOptions()
             {
-                FileProvider = fileProvider
+                FileProvider = new PhysicalFileProvider(absolute),
+                RequestPath = "/files" //注：此处指定访问前缀，不能使用~符号开头
             });
+#endif
+
+
             app.UseStaticFiles();
 
             if (!env.IsProduction())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
-                {                    
+                {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Ken API");
                 });
-            }            
+            }
             app.UseMvc();
-            
+
 
         }
     }

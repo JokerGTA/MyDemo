@@ -11,7 +11,7 @@ namespace Ken_test.Dtos.UserDtos
     {
         public UserMapProfile()
         {
-            CreateMap<UserModifyDto, UserInfo>();                
+            CreateMap<UserModifyDto, UserInfo>();
                 // .ForMember(target => target.UserName, (map) => map.MapFrom(soure => soure.UserInfo.NickName));
         }
     }
